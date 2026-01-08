@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dominic Frimpong - Cynimod</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Outfit (Brand Font Alternative) -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cynimod: {
+                            navy: '#172c54',
+                            yellow: '#f3b917',
+                            gray: '#f4f4f4',
+                            text: '#1a1a1a',
+                            button: '#171819',
+                            buttonText: '#f1b81b',
+                            footer: '#e8eff8',
+                            border: '#c9c9c9'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'Arial', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-0 md:p-4 bg-gray-200">
+
+    <!-- Mobile Container (100% width on mobile, constrained to 400px on desktop) -->
+    <main class="w-full md:max-w-[400px] bg-white shadow-2xl min-h-screen md:min-h-0 relative flex flex-col">
+        
+        <!-- Header Banner -->
+        <div class="w-full h-40 bg-cynimod-navy relative overflow-hidden">
+            <img src="https://cynimod.wordpress.com/wp-content/uploads/2026/01/contact-card-banner.png" 
+                 alt="Cynimod Pattern" 
+                 class="w-full h-full object-cover opacity-80">
+            <!-- Overlay -->
+            <div class="absolute inset-0 bg-cynimod-navy/30"></div>
+            <!-- Logo Top Left - Updated to White Version -->
+            <div class="absolute top-4 left-4">
+                 <img src="https://cynimod.com/wp-content/uploads/2025/04/cynimod_logo_horizontal_white.png?w=320&h=114" 
+                 alt="Cynimod Logo" 
+                 class="h-8 w-auto">
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="px-6 relative z-10 -mt-12 mb-6">
+            <!-- Profile Picture (Circle retained for avatar standard) -->
+            <img src="https://cynimod.wordpress.com/wp-content/uploads/2026/01/dominic-frimpong.jpg?w=300" 
+                 alt="Dominic Frimpong" 
+                 class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover bg-gray-100">
+            
+            <div class="mt-4">
+                <h1 class="text-3xl font-black text-cynimod-text leading-tight uppercase tracking-tight">Dominic Frimpong</h1>
+                <div class="w-10 h-1 bg-cynimod-yellow mt-2 mb-2"></div>
+                <!-- Updated Title -->
+                <p class="text-sm font-bold text-cynimod-navy tracking-widest">Managing Director</p>
+            </div>
+        </div>
+
+        <!-- Action List (Clean Vertical Stack - No Boxes) -->
+        <div class="flex-1 px-6 flex flex-col gap-0">
+            
+            <!-- Phone -->
+            <a href="tel:+233559348703" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-solid fa-phone"></i></div>
+                    <span class="font-bold text-cynimod-text text-sm tracking-wide">Call Mobile</span>
+                </div>
+                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
+            </a>
+
+            <!-- Email (Updated) -->
+            <a href="mailto:dominic@cynimod.com" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-solid fa-envelope"></i></div>
+                    <span class="font-bold text-cynimod-text text-sm tracking-wide">Send Email</span>
+                </div>
+                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
+            </a>
+
+            <!-- WhatsApp -->
+            <a href="https://wa.me/233559348703" target="_blank" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-brands fa-whatsapp"></i></div>
+                    <span class="font-bold text-cynimod-text text-sm tracking-wide">WhatsApp Chat</span>
+                </div>
+                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
+            </a>
+
+            <!-- Website -->
+            <a href="https://cynimod.com" target="_blank" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-solid fa-globe"></i></div>
+                    <span class="font-bold text-cynimod-text text-sm tracking-wide">Visit Website</span>
+                </div>
+                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
+            </a>
+
+            <!-- Social Row: IG, TikTok, LinkedIn, X -->
+            <div class="flex gap-6 mt-6 justify-center">
+                <!-- Instagram (Updated) -->
+                <a href="https://www.instagram.com/cynimod_" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
+                    <i class="fa-brands fa-instagram text-xl"></i>
+                </a>
+                <!-- TikTok (Updated) -->
+                <a href="https://www.tiktok.com/@cynimod_" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
+                    <i class="fa-brands fa-tiktok text-xl"></i>
+                </a>
+                <!-- LinkedIn (Updated) -->
+                <a href="https://www.linkedin.com/company/cynimodgh" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
+                    <i class="fa-brands fa-linkedin text-xl"></i>
+                </a>
+                <!-- X (Twitter) (Updated) -->
+                <a href="https://x.com/cynimod_" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
+                    <i class="fa-brands fa-x-twitter text-xl"></i>
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Bottom Area -->
+        <div class="p-6 mt-4">
+            <!-- Save Contact Button -->
+            <button onclick="downloadVCard()" class="w-full bg-cynimod-button text-cynimod-buttonText font-bold py-4 text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
+                <span>Save Contact</span>
+                <i class="fa-solid fa-download"></i>
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-cynimod-footer border-t border-cynimod-border py-6 text-center">
+            <!-- Dynamic Year -->
+            <p class="text-[10px] font-bold text-cynimod-navy tracking-widest mb-1">
+                Cynimod &copy; <span id="copyright-year"></span>
+            </p>
+            <p class="text-[10px] text-gray-500">Imagine. Create. Impact.</p>
+        </footer>
+
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        // Dynamic Year Logic
+        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+        function downloadVCard() {
+            // vCard Data Construction
+            const vcard = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'N:Frimpong;Dominic;;;',
+                'FN:Dominic Frimpong',
+                'ORG:Cynimod',
+                'TITLE:Managing Director',
+                'TEL;TYPE=WORK,VOICE:+233559348703',
+                'EMAIL;TYPE=WORK:dominic@cynimod.com',
+                'URL:https://cynimod.com',
+                'ADR;TYPE=WORK:;;Kokomlemle;Accra;;;Ghana',
+                'NOTE:Imagine. Create. Impact.',
+                'END:VCARD'
+            ].join('\n');
+
+            // Create Blob and Download Link
+            const blob = new Blob([vcard], { type: 'text/vcard' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            
+            link.href = url;
+            link.download = 'Dominic_Frimpong_Cynimod.vcf';
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
