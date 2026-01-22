@@ -1,196 +1,536 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark"> <!-- Default to Dark Mode -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dominic Frimpong - Cynimod</title>
+    <title>Dominic Frimpong | Cynimod Profile</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Outfit (Brand Font Alternative) -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&display=swap" rel="stylesheet">
     
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Brand Font: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Custom Config for Brand Colors & Dark Mode -->
     <script>
         tailwind.config = {
+            darkMode: 'class', // Enable class-based dark mode
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
                     colors: {
                         cynimod: {
                             navy: '#172c54',
-                            yellow: '#f3b917',
-                            gray: '#f4f4f4',
-                            text: '#1a1a1a',
-                            button: '#171819',
-                            buttonText: '#f1b81b',
-                            footer: '#e8eff8',
-                            border: '#c9c9c9'
+                            gold: '#f1b81b',
+                            coral: '#e67a6f',
+                            sky: '#dae3ef',
+                            ivory: '#efeae6',
+                            charcoal: '#171819', // New primary dark bg
                         }
                     },
-                    fontFamily: {
-                        sans: ['Outfit', 'Arial', 'sans-serif'],
+                    // FIX: Define gradients here so Tailwind can use them with dark: prefix
+                    backgroundImage: {
+                        'depth-light': 'radial-gradient(circle at 50% 30%, #ffffff 0%, #efeae6 100%)',
+                        'depth-dark': 'radial-gradient(circle at 50% 30%, #2a2c33 0%, #171819 100%)', // Slightly lighter center for visibility
+                    },
+                    animation: {
+                        'float-nav': 'float-nav 6s ease-in-out infinite',
+                        'float-nav-delayed': 'float-nav 6s ease-in-out 3s infinite',
+                    },
+                    keyframes: {
+                        'float-nav': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(6px)' },
+                        }
                     }
                 }
             }
         }
     </script>
+
     <style>
         body {
-            background-color: #e5e7eb;
+            /* Transition for smooth theme switching */
+            transition: background-image 0.5s ease, background-color 0.5s ease, color 0.5s ease;
+        }
+
+        /* --- NOISE TEXTURE --- */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.03; /* Subtle texture */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        
+        /* Dark mode needs slightly less noise opacity to not look dusty */
+        .dark .noise-overlay {
+            opacity: 0.04;
+            mix-blend-mode: overlay;
+        }
+
+        /* --- BACKGROUND CANVAS ENGINE --- */
+        #background-canvas {
+            position: fixed; /* Fixed to cover entire screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; 
+            pointer-events: none;
+            opacity: 0.5; /* Reduced opacity to let the gradient shine through */
+        }
+
+        /* Hide scrollbar */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* --- GLASSMORPHISM --- */
+        .glass-panel {
+            /* Adaptive Glass: Light Mode vs Dark Mode */
+            background: rgba(255, 255, 255, 0.6); /* Light Mode Base */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            transition: background-color 0.5s, border-color 0.5s;
+        }
+
+        /* Dark Mode Override for Glass */
+        .dark .glass-panel {
+            background: rgba(23, 24, 25, 0.6); /* Even more transparent to show depth */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* --- RAINDROP EFFECT (LIQUID GLASS) --- */
+        .raindrop {
+            /* Base Transparency & Blur */
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            
+            /* Shape */
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            
+            /* The Volume Shadows (Simulating Surface Tension) */
+            box-shadow: 
+                /* Outer drop shadow (Distance from surface) */
+                4px 4px 10px rgba(0, 0, 0, 0.1),
+                /* Top-Left Specular Highlight (Light source) */
+                inset 2px 2px 5px rgba(255, 255, 255, 0.6),
+                /* Bottom-Right Inner Shadow (Density) */
+                inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+                
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Dark Mode Raindrop Adjustment */
+        .dark .raindrop {
+            background: rgba(0, 0, 0, 0.2); /* Darker interior */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                4px 4px 12px rgba(0, 0, 0, 0.5), /* Deeper shadow */
+                inset 1px 1px 4px rgba(255, 255, 255, 0.2), /* Subtle highlight */
+                inset -2px -2px 6px rgba(0, 0, 0, 0.4); /* Deep inner shadow */
+        }
+
+        /* Hover State: Swell & Catch Light */
+        .raindrop:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 
+                6px 10px 20px rgba(0, 0, 0, 0.15),
+                inset 3px 3px 6px rgba(255, 255, 255, 0.8), /* Brighter highlight */
+                inset -2px -2px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .dark .raindrop:hover {
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                6px 10px 20px rgba(0, 0, 0, 0.6),
+                inset 2px 2px 8px rgba(255, 255, 255, 0.3),
+                inset -2px -2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- LIQUID BUTTON ANIMATION --- */
+        .btn-save-liquid {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .btn-save-liquid span {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-save-liquid:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(241, 184, 27, 0.4);
+            border-color: #f1b81b;
+        }
+        
+        .btn-save-liquid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-save-liquid:hover::before {
+            left: 100%;
+        }
+
+        /* --- IMAGE MASKING --- */
+        /* Smooth fade at bottom of hero image on mobile */
+        .hero-mask-mobile {
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
         }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-0 md:p-4 bg-gray-200">
+<!-- UPDATED BODY CLASS to use the configured tailwind background images -->
+<body class="bg-depth-light dark:bg-depth-dark text-cynimod-navy dark:text-cynimod-ivory selection:bg-cynimod-gold selection:text-cynimod-navy relative">
 
-    <!-- Mobile Container (100% width on mobile, constrained to 400px on desktop) -->
-    <main class="w-full md:max-w-[400px] bg-white shadow-2xl min-h-screen md:min-h-0 relative flex flex-col">
+    <!-- NOISE OVERLAY FOR TEXTURE -->
+    <div class="noise-overlay"></div>
+
+    <!-- HOLOGRAPHIC & WAVE CANVAS BACKGROUND -->
+    <canvas id="background-canvas"></canvas>
+
+    <!-- Navigation / Floating Actions -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-6 flex justify-between items-center pointer-events-none">
         
-        <!-- Header Banner -->
-        <div class="w-full h-40 bg-cynimod-navy relative overflow-hidden">
-            <img src="https://cynimod.wordpress.com/wp-content/uploads/2026/01/contact-card-banner.png" 
-                 alt="Cynimod Pattern" 
-                 class="w-full h-full object-cover opacity-80">
-            <!-- Overlay -->
-            <div class="absolute inset-0 bg-cynimod-navy/30"></div>
-            <!-- Logo Top Left - Updated to White Version -->
-            <div class="absolute top-4 left-4">
-                 <img src="https://cynimod.com/wp-content/uploads/2025/04/cynimod_logo_horizontal_white.png?w=320&h=114" 
-                 alt="Cynimod Logo" 
-                 class="h-8 w-auto">
-            </div>
-        </div>
-
-        <!-- Profile Section -->
-        <div class="px-6 relative z-10 -mt-12 mb-6">
-            <!-- Profile Picture (Circle retained for avatar standard) -->
-            <img src="https://cynimod.wordpress.com/wp-content/uploads/2026/01/dominic-frimpong.jpg?w=300" 
-                 alt="Dominic Frimpong" 
-                 class="w-24 h-24 rounded-full border-4 border-white shadow-md object-cover bg-gray-100">
+        <!-- LOGO SWITCHER (Floats on left edge) -->
+        <div class="pointer-events-auto animate-float-nav">
+            <!-- Light Mode Logo -->
+            <img src="https://cynimod.wordpress.com/wp-content/uploads/2025/04/cynimod_logo_horizontal_pos.png" 
+                 alt="Cynimod" 
+                 class="h-8 md:h-10 w-auto object-contain block dark:hidden transition-opacity duration-300">
             
-            <div class="mt-4">
-                <h1 class="text-3xl font-black text-cynimod-text leading-tight uppercase tracking-tight">Dominic Frimpong</h1>
-                <div class="w-10 h-1 bg-cynimod-yellow mt-2 mb-2"></div>
-                <!-- Updated Title -->
-                <p class="text-sm font-bold text-cynimod-navy tracking-widest">Managing Director</p>
-            </div>
+            <!-- Dark Mode Logo -->
+            <img src="https://cynimod.wordpress.com/wp-content/uploads/2025/04/cynimod_logo_horizontal_white.png" 
+                 alt="Cynimod" 
+                 class="h-8 md:h-10 w-auto object-contain hidden dark:block transition-opacity duration-300">
         </div>
+        
+        <!-- Action Buttons Group (Floats on right edge, slightly delayed) -->
+        <div class="flex gap-3 pointer-events-auto animate-float-nav-delayed">
+            <!-- Theme Toggle -->
+            <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-white/20 dark:bg-cynimod-navy/40 backdrop-blur-md border border-cynimod-navy/10 dark:border-white/10 flex items-center justify-center text-cynimod-navy dark:text-white hover:bg-cynimod-gold hover:text-cynimod-navy transition shadow-sm">
+                <!-- Sun Icon (Show in Dark Mode) -->
+                <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+                <!-- Moon Icon (Show in Light Mode) -->
+                <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+            </button>
 
-        <!-- Action List (Clean Vertical Stack - No Boxes) -->
-        <div class="flex-1 px-6 flex flex-col gap-0">
-            
-            <!-- Phone -->
-            <a href="tel:+233559348703" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-solid fa-phone"></i></div>
-                    <span class="font-bold text-cynimod-text text-sm tracking-wide">Call Mobile</span>
-                </div>
-                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
-
-            <!-- Email (Updated) -->
-            <a href="mailto:dominic@cynimod.com" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-solid fa-envelope"></i></div>
-                    <span class="font-bold text-cynimod-text text-sm tracking-wide">Send Email</span>
-                </div>
-                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
-
-            <!-- WhatsApp -->
-            <a href="https://wa.me/233559348703" target="_blank" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-brands fa-whatsapp"></i></div>
-                    <span class="font-bold text-cynimod-text text-sm tracking-wide">WhatsApp Chat</span>
-                </div>
-                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
-
-            <!-- Website -->
-            <a href="https://cynimod.com" target="_blank" class="flex items-center justify-between py-4 border-b border-gray-100 group hover:bg-gray-50 transition-colors">
-                <div class="flex items-center gap-4">
-                    <div class="text-cynimod-navy text-lg w-6 text-center"><i class="fa-solid fa-globe"></i></div>
-                    <span class="font-bold text-cynimod-text text-sm tracking-wide">Visit Website</span>
-                </div>
-                <div class="text-gray-300 text-sm group-hover:text-cynimod-yellow transition-colors"><i class="fa-solid fa-chevron-right"></i></div>
-            </a>
-
-            <!-- Social Row: IG, TikTok, LinkedIn, X -->
-            <div class="flex gap-6 mt-6 justify-center">
-                <!-- Instagram (Updated) -->
-                <a href="https://www.instagram.com/cynimod_" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
-                    <i class="fa-brands fa-instagram text-xl"></i>
-                </a>
-                <!-- TikTok (Updated) -->
-                <a href="https://www.tiktok.com/@cynimod_" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
-                    <i class="fa-brands fa-tiktok text-xl"></i>
-                </a>
-                <!-- LinkedIn (Updated) -->
-                <a href="https://www.linkedin.com/company/cynimodgh" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
-                    <i class="fa-brands fa-linkedin text-xl"></i>
-                </a>
-                <!-- X (Twitter) (Updated) -->
-                <a href="https://x.com/cynimod_" target="_blank" class="text-gray-400 hover:text-cynimod-navy transition-colors">
-                    <i class="fa-brands fa-x-twitter text-xl"></i>
-                </a>
-            </div>
-
-        </div>
-
-        <!-- Bottom Area -->
-        <div class="p-6 mt-4">
-            <!-- Save Contact Button -->
-            <button onclick="downloadVCard()" class="w-full bg-cynimod-button text-cynimod-buttonText font-bold py-4 text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
-                <span>Save Contact</span>
-                <i class="fa-solid fa-download"></i>
+            <!-- Share Button -->
+            <button onclick="shareProfile()" class="w-10 h-10 rounded-full bg-white/20 dark:bg-cynimod-navy/40 backdrop-blur-md border border-cynimod-navy/10 dark:border-white/10 flex items-center justify-center text-cynimod-navy dark:text-white hover:bg-cynimod-gold hover:text-cynimod-navy transition shadow-sm">
+                <i data-lucide="share-2" class="w-4 h-4"></i>
             </button>
         </div>
+    </nav>
 
-        <!-- Footer -->
-        <footer class="bg-cynimod-footer border-t border-cynimod-border py-6 text-center">
-            <!-- Dynamic Year -->
-            <p class="text-[10px] font-bold text-cynimod-navy tracking-widest mb-1">
-                Cynimod &copy; <span id="copyright-year"></span>
-            </p>
-            <p class="text-[10px] text-gray-500">Imagine. Create. Impact.</p>
-        </footer>
+    <!-- Main Layout -->
+    <div class="flex flex-col md:flex-row min-h-screen relative z-10">
 
-    </main>
+        <!-- LEFT COLUMN: Visual Hero -->
+        <div class="relative w-full md:w-5/12 lg:w-1/2 h-[55vh] md:h-screen md:sticky md:top-0 shrink-0 overflow-hidden bg-cynimod-sky/30 dark:bg-transparent transition-colors duration-500">
+            
+            <!-- Main Portrait -->
+            <img src="https://cynimod.wordpress.com/wp-content/uploads/2026/01/dominic-frimpong.jpg" 
+                 alt="Dominic Frimpong" 
+                 class="relative z-10 w-full h-full object-cover object-center md:object-top opacity-100 mix-blend-normal hero-mask-mobile md:mask-none transition-all duration-500 dark:brightness-90 dark:contrast-110">
+            
+            <!-- Gradient Overlay (Adaptive) -->
+            <div class="absolute inset-0 bg-gradient-to-b from-cynimod-ivory/10 via-transparent to-cynimod-ivory/90 dark:from-cynimod-charcoal/20 dark:to-cynimod-charcoal/90 md:to-transparent z-20 pointer-events-none transition-colors duration-500"></div>
+        </div>
+
+        <!-- RIGHT COLUMN: Detailed Content -->
+        <div class="relative z-30 w-full md:w-7/12 lg:w-1/2 -mt-16 md:mt-0 flex flex-col">
+            
+            <!-- Content Card -->
+            <div class="flex-1 glass-panel md:bg-cynimod-ivory/95 dark:md:bg-cynimod-charcoal/80 md:backdrop-blur-none md:border-l md:border-cynimod-navy/5 dark:md:border-white/5 rounded-t-[2.5rem] md:rounded-none px-6 py-10 md:px-16 md:py-24 lg:px-24 min-h-screen shadow-[0_-10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none transition-colors duration-500">
+                
+                <!-- Profile Header Block (Aligned Name & Buttons) -->
+                <div class="flex justify-between items-start mb-8 gap-4">
+                    <!-- Left: Name & Title -->
+                    <div>
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-cynimod-navy dark:text-white tracking-tight leading-[0.9] mb-3 transition-colors">
+                            Dominic<br class="md:hidden"><span class="md:hidden"> </span>Frimpong
+                        </h1>
+                        <p class="text-cynimod-gold font-medium tracking-widest uppercase text-xs md:text-sm">Founder & Lead Creative</p>
+                    </div>
+
+                    <!-- Right: Contact Buttons (Top Aligned, Raindrop Effect) -->
+                    <div class="flex gap-4 pt-2">
+                        <!-- WhatsApp Button -->
+                        <a href="https://wa.me/233550386888" target="_blank" class="raindrop w-12 h-12 flex items-center justify-center group cursor-pointer">
+                            <svg class="w-6 h-6 text-cynimod-navy dark:text-white group-hover:text-green-500 dark:group-hover:text-green-400 transition-colors" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12c0 2.17.7 4.19 1.94 5.86L3 22l4.23-1.11A9.969 9.969 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm0 18c-1.78 0-3.48-.55-4.94-1.5l-.35-.23-2.65.7 1.45-3.47-.23-.37A7.957 7.957 0 014 12c0-4.41 3.59-8 8-8s8 3.59 8 8-3.59 8-8 8zm4.39-5.96c-.24-.12-1.44-.71-1.66-.79-.22-.08-.38-.12-.54.12-.16.24-.62.79-.76.96-.14.16-.29.18-.52.06-.24-.12-1.01-.37-1.92-1.18-.71-.63-1.19-1.41-1.33-1.66-.14-.24-.01-.37.11-.48.11-.11.24-.29.36-.43.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.46-.4-.4-.54-.4h-.46c-.16 0-.42.06-.64.3-.22.24-.86.84-.86 2.05s.88 2.38 1 2.71c.12.32 1.74 2.66 4.21 3.73 1.47.63 2.04.5 2.78.47.82-.04 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28z" clip-rule="evenodd"></path>
+                            </svg>
+                        </a>
+                        <!-- Email Button -->
+                        <a href="mailto:info@cynimod.com" class="raindrop w-12 h-12 flex items-center justify-center group cursor-pointer">
+                            <i data-lucide="mail" class="w-5 h-5 text-cynimod-navy dark:text-white group-hover:text-cynimod-gold transition-colors"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Info Block -->
+                <div class="mb-12">
+                    <!-- Stats Row -->
+                    <div class="flex justify-start gap-8 md:gap-12 py-6 border-y border-cynimod-navy/10 dark:border-white/10 mb-8 transition-colors">
+                        <div>
+                            <span class="block text-xl md:text-2xl font-bold text-cynimod-navy dark:text-white transition-colors">10+</span>
+                            <span class="text-[10px] md:text-xs uppercase tracking-widest text-cynimod-navy/60 dark:text-cynimod-sky/60 font-semibold mt-1">Years Exp.</span>
+                        </div>
+                        <div>
+                            <span class="block text-xl md:text-2xl font-bold text-cynimod-navy dark:text-white transition-colors">50+</span>
+                            <span class="text-[10px] md:text-xs uppercase tracking-widest text-cynimod-navy/60 dark:text-cynimod-sky/60 font-semibold mt-1">Brands</span>
+                        </div>
+                        <div>
+                            <span class="block text-xl md:text-2xl font-bold text-cynimod-navy dark:text-white transition-colors">ACC</span>
+                            <span class="text-[10px] md:text-xs uppercase tracking-widest text-cynimod-navy/60 dark:text-cynimod-sky/60 font-semibold mt-1">Ghana</span>
+                        </div>
+                    </div>
+
+                    <!-- Bio -->
+                    <p class="text-cynimod-navy/80 dark:text-cynimod-ivory/80 text-base md:text-lg leading-relaxed font-light max-w-lg mb-8 transition-colors">
+                        Helping Ghanaian businesses move from "Surviving" to "Thriving" through strategic design and marketing.
+                    </p>
+
+                    <!-- Primary CTA -->
+                    <!-- Changed rounded-2xl to rounded-none for sharp edges -->
+                    <button onclick="downloadVCard()" class="btn-save-liquid w-full md:w-auto md:min-w-[220px] h-14 rounded-none bg-gradient-to-r from-cynimod-gold to-yellow-600 flex items-center justify-center gap-3 text-cynimod-navy font-bold text-sm tracking-wide shadow-lg shadow-cynimod-gold/20">
+                        <span>Save Contact</span>
+                        <i data-lucide="user-plus" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Tags Section (Raindrop Effect Applied) -->
+                <div class="mb-12">
+                    <h3 class="text-xs font-bold text-cynimod-navy/40 dark:text-cynimod-sky/40 uppercase tracking-widest mb-4 transition-colors">Expertise</h3>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="raindrop px-4 py-2 text-xs text-cynimod-navy dark:text-cynimod-sky font-medium cursor-default">Brand Identity</span>
+                        <span class="raindrop px-4 py-2 text-xs text-cynimod-navy dark:text-cynimod-sky font-medium cursor-default">Digital Strategy</span>
+                        <span class="raindrop px-4 py-2 text-xs text-cynimod-navy dark:text-cynimod-sky font-medium cursor-default">Web Design</span>
+                        <span class="raindrop px-4 py-2 text-xs text-cynimod-navy dark:text-cynimod-sky font-medium cursor-default">Print</span>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <footer class="text-center pt-8 border-t border-cynimod-navy/10 dark:border-white/5 transition-colors flex flex-col items-center gap-6">
+                    <!-- Social Media Icons (Raindrop Style) -->
+                    <div class="flex gap-4 flex-wrap justify-center">
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/cynimod_/" target="_blank" class="raindrop w-10 h-10 flex items-center justify-center group cursor-pointer">
+                            <i data-lucide="instagram" class="w-4 h-4 text-cynimod-navy dark:text-white group-hover:text-cynimod-gold transition-colors"></i>
+                        </a>
+                        
+                        <!-- TikTok -->
+                        <a href="https://tiktok.com/@cynimod_" target="_blank" class="raindrop w-10 h-10 flex items-center justify-center group cursor-pointer">
+                            <svg class="w-4 h-4 text-cynimod-navy dark:text-white group-hover:text-cynimod-gold transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                            </svg>
+                        </a>
+
+                        <!-- LinkedIn -->
+                        <a href="https://linkedin.com/company/cynimodgh" target="_blank" class="raindrop w-10 h-10 flex items-center justify-center group cursor-pointer">
+                            <i data-lucide="linkedin" class="w-4 h-4 text-cynimod-navy dark:text-white group-hover:text-cynimod-gold transition-colors"></i>
+                        </a>
+
+                        <!-- X (Twitter) -->
+                        <a href="https://x.com/cynimod_" target="_blank" class="raindrop w-10 h-10 flex items-center justify-center group cursor-pointer">
+                            <svg class="w-4 h-4 text-cynimod-navy dark:text-white group-hover:text-cynimod-gold transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+
+                        <!-- Website -->
+                        <a href="https://cynimod.com/" target="_blank" class="raindrop w-10 h-10 flex items-center justify-center group cursor-pointer">
+                            <i data-lucide="globe" class="w-4 h-4 text-cynimod-navy dark:text-white group-hover:text-cynimod-gold transition-colors"></i>
+                        </a>
+                    </div>
+
+                    <!-- Copyright -->
+                    <p class="text-[10px] text-cynimod-navy/40 dark:text-cynimod-sky/40 font-medium tracking-widest">
+                        &copy; 2026 Cynimod. Accra, Ghana.
+                    </p>
+                </footer>
+
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script>
-        // Dynamic Year Logic
-        document.getElementById('copyright-year').textContent = new Date().getFullYear();
+        // Init Icons
+        lucide.createIcons();
 
+        // -------------------------------
+        // THEME MANAGEMENT
+        // -------------------------------
+        const html = document.documentElement;
+        
+        // Check local storage or system preference
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        function toggleTheme() {
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+            }
+            // Update canvas blending for new theme
+            if(window.animate) requestAnimationFrame(animate); 
+        }
+
+        // -------------------------------
+        // CANVAS ANIMATION ENGINE (CHROMA + WAVES)
+        // -------------------------------
+        const canvas = document.getElementById('background-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, blobs = [], time = 0;
+
+        // Cynimod Palette
+        const palette = [
+            {r: 241, g: 184, b: 27},  // Gold
+            {r: 230, g: 122, b: 111}, // Coral
+            {r: 23, g: 44, b: 84},    // Navy
+            {r: 33, g: 212, b: 253}   // Cyan Accent
+        ];
+
+        class Blob {
+            constructor() { this.init(); }
+            init() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.8; 
+                this.vy = (Math.random() - 0.5) * 0.8;
+                this.r = Math.random() * 300 + 100; // Large, ambient blobs
+                this.color = palette[Math.floor(Math.random() * palette.length)];
+            }
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                if (this.x < -200 || this.x > width + 200) this.vx *= -1;
+                if (this.y < -200 || this.y > height + 200) this.vy *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                const g = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.r);
+                g.addColorStop(0, `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.5)`);
+                g.addColorStop(1, `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0)`);
+                ctx.fillStyle = g;
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function drawWaves() {
+            const isDark = html.classList.contains('dark');
+            ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(23, 44, 84, 0.05)';
+            ctx.lineWidth = 1;
+            
+            // Draw 3 layers of waves
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                for (let x = 0; x < width; x+=5) {
+                    // Sine wave logic: y = center + amplitude * sin(frequency * x + phase)
+                    const y = (height / 2) + 
+                              (height / 4) * Math.sin((x * 0.002) + (time * 0.002) + (i * 1.5)) + 
+                              (i * 100); // Offset each wave
+                    if (x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+        }
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            blobs = [];
+            // Create fewer blobs for mobile to save battery
+            const blobCount = width < 768 ? 4 : 7;
+            for(let i=0; i<blobCount; i++) blobs.push(new Blob());
+        }
+
+        function animate() {
+            time++; // Increment time for waves
+            ctx.clearRect(0, 0, width, height);
+            
+            // ADAPTIVE BLENDING
+            const isDark = html.classList.contains('dark');
+            
+            // 1. Draw Blobs (Background Layer)
+            ctx.globalCompositeOperation = isDark ? 'screen' : 'multiply';
+            blobs.forEach(b => { b.update(); b.draw(); });
+            
+            // 2. Draw Waves (Overlay Layer)
+            ctx.globalCompositeOperation = 'source-over';
+            drawWaves();
+            
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        animate();
+
+        // -------------------------------
+        // ACTIONS
+        // -------------------------------
         function downloadVCard() {
-            // vCard Data Construction
-            const vcard = [
-                'BEGIN:VCARD',
-                'VERSION:3.0',
-                'N:Frimpong;Dominic;;;',
-                'FN:Dominic Frimpong',
-                'ORG:Cynimod',
-                'TITLE:Managing Director',
-                'TEL;TYPE=WORK,VOICE:+233559348703',
-                'EMAIL;TYPE=WORK:dominic@cynimod.com',
-                'URL:https://cynimod.com',
-                'ADR;TYPE=WORK:;;Kokomlemle;Accra;;;Ghana',
-                'NOTE:Imagine. Create. Impact.',
-                'END:VCARD'
-            ].join('\n');
-
-            // Create Blob and Download Link
-            const blob = new Blob([vcard], { type: 'text/vcard' });
+            const name = "Dominic Frimpong";
+            const vCardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nORG:Cynimod\nTITLE:Founder\nEMAIL:info@cynimod.com\nTEL:+233550386888\nEND:VCARD`;
+            const blob = new Blob([vCardData], { type: 'text/vcard' });
             const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            
-            link.href = url;
-            link.download = 'Dominic_Frimpong_Cynimod.vcf';
-            document.body.appendChild(link);
-            link.click();
-            
-            // Cleanup
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name.replace(' ', '_')}.vcf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        function shareProfile() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Dominic Frimpong | Cynimod',
+                    text: 'Check out this profile.',
+                    url: window.location.href
+                });
+            } else {
+                alert("Link copied to clipboard!");
+            }
         }
     </script>
 </body>
