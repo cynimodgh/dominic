@@ -379,7 +379,7 @@
 
                     <!-- Copyright -->
                     <p class="text-[10px] text-cynimod-navy/40 dark:text-cynimod-sky/40 font-medium tracking-widest">
-                        &copy; 2026 Cynimod. Accra, Ghana.
+                        &copy; 2026 Cynimod. Accra, Ghana<br><br>All rights reserved.<br><br>Imagine. Create. Impact.
                     </p>
                 </footer>
 
@@ -593,19 +593,15 @@
         animate();
 
         // -------------------------------
-        // ACTIONS
+        // ACTIONS: VCARD & SHARE
         // -------------------------------
-        function downloadVCard() {
-            const btn = document.getElementById('saveBtn');
+        async function downloadVCard() {
             const btnText = document.getElementById('saveBtnText');
             const originalText = btnText.innerText;
-            
-            // Visual Feedback
             btnText.innerText = "Saving...";
-            
+
             const name = "Dominic Frimpong";
             // RFC 6350 VCard 3.0 Format
-            // Ensure proper newlines (\r\n) and field separation
             const vCardData = 
 `BEGIN:VCARD
 VERSION:3.0
@@ -618,26 +614,49 @@ TEL;type=CELL:+233559348703
 URL:https://cynimod.com
 END:VCARD`;
 
+            const fileName = 'Dominic_Frimpong.vcf';
+
+            // 1. Try Native Share API (Mobile "Open Straight Up" Feel)
+            if (navigator.share && navigator.canShare) {
+                try {
+                    const file = new File([vCardData], fileName, { type: 'text/vcard' });
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: name,
+                            text: 'Contact details for Dominic Frimpong'
+                        });
+                        btnText.innerText = originalText;
+                        return; // Exit if share was successful
+                    }
+                } catch (err) {
+                    console.log('Share API failed, falling back to download', err);
+                }
+            }
+
+            // 2. Fallback: Blob Download (Desktop/Unsupported Mobile)
             try {
                 const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
                 const url = URL.createObjectURL(blob);
+                
+                // Using window.location to avoid new tab feeling on mobile
+                // Note: On desktop this will just download the file
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
-                a.download = 'Dominic_Frimpong.vcf';
+                a.download = fileName;
                 document.body.appendChild(a);
                 a.click();
                 
-                // Cleanup
                 setTimeout(() => {
                     document.body.removeChild(a);
                     URL.revokeObjectURL(url);
-                    btnText.innerText = originalText; // Reset text
+                    btnText.innerText = originalText;
                 }, 2000);
             } catch (e) {
                 console.error("VCard Download Failed:", e);
-                // Fallback for some older mobile browsers if Blob fails (less likely now but possible)
-                window.open('data:text/vcard;charset=utf-8,' + encodeURIComponent(vCardData));
+                // Last resort for very old browsers
+                window.location.href = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vCardData);
                 btnText.innerText = originalText;
             }
         }
