@@ -595,7 +595,7 @@
         // -------------------------------
         // ACTIONS: VCARD & SHARE
         // -------------------------------
-        async function downloadVCard() {
+        function downloadVCard() {
             const btnText = document.getElementById('saveBtnText');
             const originalText = btnText.innerText;
             btnText.innerText = "Saving...";
@@ -615,48 +615,40 @@ URL:https://cynimod.com
 END:VCARD`;
 
             const fileName = 'Dominic_Frimpong.vcf';
+            // Encode as Base64 data URI
+            const vCardBase64 = btoa(vCardData);
+            const dataUri = `data:text/vcard;base64,${vCardBase64}`;
 
-            // 1. Try Native Share API (Mobile "Open Straight Up" Feel)
-            if (navigator.share && navigator.canShare) {
-                try {
-                    const file = new File([vCardData], fileName, { type: 'text/vcard' });
-                    if (navigator.canShare({ files: [file] })) {
-                        await navigator.share({
-                            files: [file],
-                            title: name,
-                            text: 'Contact details for Dominic Frimpong'
-                        });
-                        btnText.innerText = originalText;
-                        return; // Exit if share was successful
-                    }
-                } catch (err) {
-                    console.log('Share API failed, falling back to download', err);
-                }
-            }
-
-            // 2. Fallback: Blob Download (Desktop/Unsupported Mobile)
+            // Strategy: Attempt to navigate to the file directly.
+            // On iOS Safari, this typically opens the Contact Preview screen.
+            // On other browsers, it might trigger a download or open a new tab.
+            
             try {
-                const blob = new Blob([vCardData], { type: 'text/vcard;charset=utf-8' });
-                const url = URL.createObjectURL(blob);
+                // Check if user is on a mobile device (rough check)
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+                if (isMobile) {
+                    // Mobile: Direct navigation often works best for "Open Straight Up"
+                    window.location.href = dataUri;
+                } else {
+                    // Desktop: Use the standard download attribute method
+                    const link = document.createElement('a');
+                    link.href = dataUri;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
                 
-                // Using window.location to avoid new tab feeling on mobile
-                // Note: On desktop this will just download the file
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = fileName;
-                document.body.appendChild(a);
-                a.click();
-                
+                // Reset button text after a short delay
                 setTimeout(() => {
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
                     btnText.innerText = originalText;
-                }, 2000);
+                }, 1500);
+
             } catch (e) {
-                console.error("VCard Download Failed:", e);
-                // Last resort for very old browsers
-                window.location.href = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vCardData);
+                console.error("VCard Action Failed:", e);
+                // Fallback
+                window.location.href = dataUri;
                 btnText.innerText = originalText;
             }
         }
